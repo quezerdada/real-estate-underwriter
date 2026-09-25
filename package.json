@@ -22,7 +22,9 @@
   },
   "homepage": "https://github.com/quezerdada/real-estate-underwriter#readme",
   "devDependencies": {
+    "@prisma/client": "^7.10.0",
     "@types/node": "^26.6.2",
+    "prisma": "^7.10.0",
     "typescript": "^7.0.2",
     "vitest": "^5.0.1"
   },

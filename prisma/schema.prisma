@@ -1,0 +1,73 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  criteria   InvestmentCriteria?
+  properties Property[]
+}
+
+model InvestmentCriteria {
+  id                  String   @id @default(uuid())
+  userId              String   @unique
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  targetCoc           Float    @default(0.08)
+  minDscr             Float    @default(1.25)
+  maxLtv              Float    @default(0.80)
+  minOpReserveCents   Int      @default(1000000)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model Property {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  address   String
+  type      String   @default("SingleFamily")
+  units     Int      @default(1)
+  sqft      Int?
+  yearBuilt Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  deals Deal[]
+}
+
+model Deal {
+  id         String   @id @default(uuid())
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  strategy   String   @default("BUY_AND_HOLD_LTR")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  versions UnderwritingVersion[]
+}
+
+model UnderwritingVersion {
+  id          String   @id @default(uuid())
+  dealId      String
+  deal        Deal     @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  versionName String   @default("V1 - Initial Screen")
+  isBaseCase  Boolean  @default(true)
+  
+  acquisition Json
+  financing   Json
+  revenue     Json
+  expenses    Json
+  results     Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
